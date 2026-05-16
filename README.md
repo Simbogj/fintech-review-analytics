@@ -2,19 +2,19 @@
 
 ## Customer Experience Analytics for Ethiopian Banking Apps
 
-This project objective is to analyze customer experience for Ethiopian fintech applications by collecting and analyzing Google Play Store reviews from:
+This project analyzes customer experience and user satisfaction for Ethiopian fintech mobile banking applications using Google Play Store reviews from:
 
 - Commercial Bank of Ethiopia (CBE)
 - Bank of Abyssinia (BOA)
 - Dashen Bank
 
 The project focuses on:
-- Web scraping
-- Data preprocessing
+
+- Web scraping and review collection
+- Data preprocessing and cleaning
+- Exploratory data analysis (EDA)
 - Sentiment analysis
 - Thematic analysis
-- PostgreSQL database engineering
-- Business insight generation
 
 ---
 
@@ -22,40 +22,195 @@ The project focuses on:
 
 ```plaintext
 fintech-review-analytics/
-├── .github/
+│
+├── .github/                 # GitHub workflows and configurations
 ├── data/
-├── notebooks/
-├── scripts/
-├── src/
-├── tests/
-├── requirements.txt
-└── README.md
+│   ├── raw/                 # Raw, Processed and cleaned review datasets
+│
+├── notebooks/               # Jupyter notebooks for scraping and analysis
+│   ├── scraping_cbe.ipynb
+│   ├── scraping_boa.ipynb
+│   ├── scraping_dashen.ipynb
+│
+├── scripts/                 # Python scripts for automation
+├── src/                     # Source code modules
+├── tests/                   # Unit and integration tests
+│
+├── requirements.txt         # Python dependencies
+└── README.md                # Project documentation
+```
 
+---
 
-**Scraping Methodology**
-- **Source & Tooling:** Reviews were collected from Google Play using the `google-play-scraper` Python library.
-- **Fields Collected:** `review` (text), `rating` (1–5 stars), `date` (UTC, normalized to `YYYY-MM-DD`), `bank` (app identifier), and `source` (`Google Play`).
-- **Sampling:** For each app, up to 400 of the newest available reviews were requested in a single run.
+# Installation
 
-**Date Range Used**
-- The cleaned datasets in `data/raw/` cover the following ranges based on the collected reviews:
-	- BOA: 2025-06-15 → 2026-05-15
-	- CBE: 2026-03-21 → 2026-05-15
-	- Dashen: 2025-09-29 → 2026-05-14
+## Clone the Repository
 
-**Preprocessing Steps**
-- Drop rows missing critical fields (`review`, `rating`).
-- Deduplicate by `review_id` and remove empty reviews.
-- Normalize `date` to `YYYY-MM-DD` using pandas datetime parsing.
-- Clean review text by collapsing whitespace and trimming edges.
-- Enforce rating integer values in the 1–5 range.
+```bash
+git clone https://github.com/Simbogj/fintech-review-analytics.git
+cd fintech-review-analytics
+```
 
-**Limitations & Notes**
-- **Sampling bias:** The pipeline requests a fixed number (`count=400`) of the newest reviews. This is a convenience sample and may not represent the full historical distribution of reviews for each app.
-- **Rate limits & availability:** Scraping depends on the Google Play Store endpoints and may be subject to rate-limiting or temporary changes in the page/API format.
-- **Language & region:** Scrapes used `lang='en'` and `country='et'`; reviews in other languages or regions may be excluded.
-- **Text quality:** Short, ambiguous, or non-informative reviews (e.g., "Good") remain in the cleaned CSVs; downstream analyses should consider filtering by text length or applying additional heuristics.
-- **Temporal window differences:** CBE's collected reviews span a shorter, more recent window than BOA and Dashen—comparisons that rely on time trends should account for this difference.
+## Create Virtual Environment
 
-**Next Steps**
-- Run sentiment analysis and topic modeling on the cleaned CSVs in `data/raw/` to extract actionable insights and compare banks.
+```bash
+python -m venv venv
+```
+
+### Activate Environment
+
+#### Windows
+
+```bash
+venv\Scripts\activate
+```
+
+#### Mac/Linux
+
+```bash
+source venv/bin/activate
+```
+
+## Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+# Scraping Methodology
+
+## Source and Tools
+
+Customer reviews were collected from the Google Play Store using the Python library `google-play-scraper`.
+
+## Data Fields Collected
+
+The following fields were extracted for each review:
+
+- `review` → User review text
+- `rating` → Star rating (1–5)
+- `date` → Review date
+- `bank` → Bank/app identifier
+- `source` → Review platform (`Google Play`)
+
+---
+
+# Data Collection Details
+
+## Sampling Strategy
+
+- Up to **400 of the most recent reviews** were collected for each banking application.
+- Scraping was performed using:
+  - `lang='en'`
+  - `country='et'`
+
+---
+
+# Date Ranges Used
+
+The cleaned datasets stored in `data/raw/` contain reviews collected within the following ranges:
+
+| Bank | Date Range |
+|------|-------------|
+| BOA | 2025-06-15 → 2026-05-15 |
+| CBE | 2026-03-21 → 2026-05-15 |
+| Dashen | 2025-09-29 → 2026-05-14 |
+
+---
+
+# Data Preprocessing
+
+The following preprocessing steps were applied before analysis:
+
+- Removed rows with missing critical fields:
+  - `review`
+  - `rating`
+- Removed duplicate reviews using `review_id`
+- Removed empty review texts
+- Normalized dates to `YYYY-MM-DD`
+- Cleaned review text:
+  - Trimmed whitespace
+  - Removed unnecessary line breaks
+  - Standardized formatting
+- Converted ratings into integer values between 1 and 5
+
+---
+
+# Technologies Used
+
+- Python
+- Jupyter Notebook
+- Pandas
+- NumPy
+- Matplotlib
+- Seaborn
+- NLTK
+- TextBlob
+- VADER Sentiment
+- Google Play Scraper
+
+---
+
+# Running the Project
+
+## Run Scraping Notebooks
+
+- `scraping_cbe.ipynb`
+- `scraping_boa.ipynb`
+- `scraping_dashen.ipynb`
+
+---
+
+# Limitations
+
+## Sampling Bias
+
+The scraper retrieves a fixed number of the most recent reviews (`count=400`). Therefore, the dataset may not fully represent all historical customer feedback.
+
+## Platform Dependency
+
+The scraping process depends on Google Play Store availability and API behavior. Changes in the platform structure or rate limits may affect data collection.
+
+## Language and Regional Constraints
+
+Only reviews available under:
+
+- English language (`lang='en'`)
+- Ethiopia region (`country='et'`)
+
+were included in the dataset.
+
+## Review Quality
+
+Some reviews may contain:
+
+- Very short text
+- Ambiguous feedback
+- Non-informative comments (e.g., “Good”, “Nice app”)
+
+Additional filtering or NLP preprocessing may be required for advanced analysis.
+
+## Uneven Time Windows
+
+The collected review periods differ across banks. For example, CBE reviews cover a shorter and more recent time range than BOA and Dashen reviews. Time-based comparisons should account for these differences.
+
+---
+
+# Future Improvements
+
+Planned next steps include:
+
+- Sentiment classification
+- Topic modeling
+- Customer pain-point detection
+- Comparative fintech analytics
+- Interactive dashboards and visualizations
+- Deployment of automated data pipelines
+
+---
+
+# Author
+
+Simbo Getachew 
