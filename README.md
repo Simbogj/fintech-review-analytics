@@ -45,43 +45,6 @@ fintech-review-analytics/
 
 ---
 
-# Installation
-
-## Clone the Repository
-
-```bash
-git clone https://github.com/Simbogj/fintech-review-analytics.git
-cd fintech-review-analytics
-```
-
-## Create Virtual Environment
-
-```bash
-python -m venv venv
-```
-
-### Activate Environment
-
-#### Windows
-
-```bash
-venv\Scripts\activate
-```
-
-#### Mac/Linux
-
-```bash
-source venv/bin/activate
-```
-
-## Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
 # The Four Main Tasks
 
 This project is divided into four main tasks that form a complete data engineering and analytics pipeline:
@@ -166,6 +129,7 @@ Design and implement a relational database schema in PostgreSQL to persistently 
 - `scripts/insert_review.py`: Database connection, schema creation, and data insertion script
 
 ### SQL Schema
+```sql
 -- Banks table
 CREATE TABLE IF NOT EXISTS banks (
     bank_id SERIAL PRIMARY KEY,
